@@ -197,30 +197,35 @@ class Agente:
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+class Wellcome:
 
-def displaybanner(text, ch='-', length=100):
-    spaced_text = ' %s ' % text
-    banner = spaced_text.center(length, ch)
-    print(banner)
+    def displaybanner(text, ch='-', length=100):
+        spaced_text = ' %s ' % text
+        banner = spaced_text.center(length, ch)
+        print(banner)
 
-def printeol():
-    print('\n')
+    def printeol():
+        print('\n')
+
+    def header():
+        clear()
+        displaybanner('-')
+        displaybanner('-')
+        displaybanner('Sistema de Gestion')
+        displaybanner('-')
+        displaybanner('-')
+        displaybanner('  ',' ')
+        displaybanner('Autor: Nicolas Magliaro - version 1.0 \n\n', ' ')
+        displaybanner('  ',' ')
+        displaybanner('  ',' ')
+        displaybanner('  ',' ')
+        printeol()
+        printeol()
 
 if __name__ == "__main__":
     inicio = Authenticator()
-    clear()
-    displaybanner('-')
-    displaybanner('-')
-    displaybanner('Sistema de Gestion')
-    displaybanner('-')
-    displaybanner('-')
-    displaybanner('  ',' ')
-    displaybanner('Autor: Nicolas Magliaro - version 1.0 \n\n', ' ')
-    displaybanner('  ',' ')
-    displaybanner('  ',' ')
-    displaybanner('  ',' ')
-    printeol()
-    printeol()
+    header = Wellcome()
+    header.header()
 
     opt = obtener_input_valido(
         "¿Elija numero de opción? 1) Iniciar sesión 2) Registrar Usuario",

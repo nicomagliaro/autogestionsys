@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 __author__ = 'nico'
 
-
+from auth import Authenticator
+import getpass
+import os
 import sys
 
 class Inmueble:
@@ -197,6 +199,106 @@ class Agente:
         init_args = inmuebleClass.prompt_init()
         self.inmueble_list.append(inmuebleClass(**init_args))
 
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+class Login:
+    '''Muestra un menú y responde a elecciones cuando se ejecuta.'''
+    def __init__(self):
+        self.inicio = Authenticator()
+        self.elecciones = {
+                "1" : self.iniciar_sesion,
+                "2" : self.registar_usuario,
+                "3" : self.quit
+                }
+
+    def mostrar_menu(self):
+        print("""
+              Menu Inmobiliaria
+
+              1 Iniciar sesión
+              2 Registrar nuevo usuario
+              3 Salir
+        """)
+
+    def run(self):
+        '''Muestra el menú y responde a las elecciones.'''
+        while True:
+            self.mostrar_menu()
+            eleccion = input("Escribe una opción: ")
+            accion = self.elecciones.get(str(eleccion))
+            if accion:
+                accion()
+            else:
+                print("{0} no es una elección válida".format(eleccion))
+
+    def iniciar_sesion(self):
+        clear()
+        print("Iniciando sesión")
+        print()
+        user = input("Ingrese nombre de usuario: ")
+        if inicio.is_logged_in(user):
+            return False
+        else:
+            try:
+                passw = getpass.getpass(prompt='Password: ', stream=None)
+                inicio.login(user, passw)
+                return False
+            except:
+                raise Exception("Error en inicio de sesión")
+                sys.exit(0)
+
+    def registar_usuario(self):
+        clear()
+        print("Registrando nuevo usuario")
+        print()
+        user = input("Ingrese nuevo usuario: ")
+        passw = getpass.getpass(prompt='Password: ', stream=None)
+        try:
+            inicio.add_user(user,passw)
+            return True
+        except:
+            raise Exception("Error al registrar usuario: %s" % user)
+            sys.exit(0)
+
+    def quit(self):
+        print("Gracias por usar Inmo.")
+        sys.exit(0)
+
+class Bienvenido:
+    def __init__(self, text='', ch='-', length=100):
+        self.text = text
+        self.ch = ch
+        self.length = length
+
+    def displaybanner(self):
+        spaced_text = ' %s ' % self.text
+        banner = spaced_text.center(self.length, self.ch)
+        print(banner)
+
+    def __banner(self, text='', ch='-', length=100):
+        spaced_text = ' %s ' % self.text
+        banner = spaced_text.center(self.length, self.ch)
+        print(banner)
+
+    def printeol(self):
+        print('\n')
+
+    def header(self):
+        clear()
+        self.__banner('-')
+        self.__banner('-')
+        self.__banner('Sistema de Gestion')
+        self.__banner('-')
+        self.__banner('-')
+        self.__banner('  ',' ')
+        self.__banner('Autor: Nicolas Magliaro - version 1.0 \n\n', ' ')
+        self.__banner('  ',' ')
+        self.__banner('  ',' ')
+        self.__banner('  ',' ')
+        self.printeol()
+        self.printeol()
+
 class Menu:
     '''Muestra un menú y responde a elecciones cuando se ejecuta.'''
     def __init__(self):
@@ -232,32 +334,34 @@ class Menu:
     def show_inmuebles(self):
         self.menu.mostrar_inmuebles()
 
-    """def search_notas(self):
+    def search_notas(self):
         filter = input("Buscar por: ")
         notas = self.cuaderno.search(filter)
-        self.mostrar_notas(notas)"""
+        self.mostrar_notas(notas)
 
     def add_inmueble(self):
         self.menu.add_inmueble()
 
     def modificar_inmuebles(self):
         pass
-        """id = input("Escribe el id de una nota: ")
+        id = input("Escribe el id de una nota: ")
         memo = input("Escribe un memo: ")
         tags = input("Escribe tags: ")
         if memo:
             self.cuaderno.modificar_memo(id, memo)
         if tags:
             self.cuaderno.modificar_tags(id, tags)
-        """
 
     def quit(self):
         print("Gracias por usar Inmo.")
         sys.exit(0)
 
 if __name__ == "__main__":
+    start, menu, banner = (Login(), Menu(), Bienvenido())
+    banner.header()
 
-    menu = Menu()
+    while True:
+        start.run()
     menu.run()
 
 
