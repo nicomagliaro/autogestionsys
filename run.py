@@ -6,6 +6,62 @@ from auth import Authenticator
 import getpass
 import os
 import sys
+from optparse import OptionParser
+import datetime, time
+import logging
+
+# Basedir
+try:
+    Basedir = os.path.dirname(os.path.abspath(__file__))
+except NameError:  # We are the main py2exe script, not a module
+    Basedir = os.path.dirname(os.path.abspath(sys.argv[0]))
+
+# ------------------------ LOGGER CONFIG ------------------------------
+
+# Setting
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
+
+# # create a file handler
+# handler = logging.FileHandler(os.path.join(Basedir, 'decoder.log'))
+# handler.setLevel(logging.DEBUG)
+
+# # create a logging format
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# handler.setFormatter(formatter)
+
+# # add the handlers to the logger
+# logger.addHandler(handler)
+# logger.info('__Basedir__: Definiendo directorio del proyecto: %s' % Basedir)
+# ----------------------------------------------------------------------
+
+def header():
+    print
+    print ('###################################################################################')
+    print ('############################   INMO ##################################')
+    print ('###################################################################################')
+    print ('###########    XML to PDF encoder    ## Date:  ' + str(datetime) + '  ########################')
+    print ('###################################################################################')
+    print()
+
+
+#logger.info(header())
+
+def parse_options():
+    HELP = ("""
+                  Decoder EXE can me executer either as Scheduled Task od from CMD:
+                  1) Use the file 'config.cfg by set the parameter with -c {arg}' for Scheduled Task Mode
+                  2) Run from command line otherwise.
+                  3) Provide input PDF encoding with option -E.
+            """)
+
+    parser = OptionParser(usage='usage: run { $python3 %prog',
+                          version='%prog 1.0', description=HELP)
+
+    parser.add_option('-h', '--help', action='store', type='string', dest='input', help='Help')
+
+
+    options, args = parser.parse_args()
 
 class Inmueble:
     def __init__(self, metros_cuadrados='', habitaciones='',
@@ -213,19 +269,20 @@ class Login:
                 }
 
     def mostrar_menu(self):
-        print("""
-              Menu Inmobiliaria
+        menu = '''
+                                Menu Inmobiliaria
 
-              1 Iniciar sesión
-              2 Registrar nuevo usuario
-              3 Salir
-        """)
+                                1) Iniciar sesión
+                                2) Registrar nuevo usuario
+                                3) Salir
+                '''
+        print(menu)
 
     def run(self):
         '''Muestra el menú y responde a las elecciones.'''
         while True:
             self.mostrar_menu()
-            eleccion = input("Escribe una opción: ")
+            eleccion = input("Escribe una opción: ".center(30))
             accion = self.elecciones.get(str(eleccion))
             if accion:
                 accion()
@@ -237,29 +294,31 @@ class Login:
         print("Iniciando sesión")
         print()
         user = input("Ingrese nombre de usuario: ")
-        if inicio.is_logged_in(user):
+        if self.inicio.is_logged_in(user):
             return False
-        else:
-            try:
-                passw = getpass.getpass(prompt='Password: ', stream=None)
-                inicio.login(user, passw)
-                return False
-            except:
-                raise Exception("Error en inicio de sesión")
-                sys.exit(0)
+        try:
+            passw = getpass.getpass(prompt='Password: ', stream=None)
+            self.inicio.login(user, passw)
+
+        except:
+            raise Exception("Error en inicio de sesión")
+            sys.exit(0)
+        return False
 
     def registar_usuario(self):
         clear()
         print("Registrando nuevo usuario")
         print()
         user = input("Ingrese nuevo usuario: ")
-        passw = getpass.getpass(prompt='Password: ', stream=None)
         try:
-            inicio.add_user(user,passw)
-            return True
+            if not self.inicio.user_exist(user):
+                passw = getpass.getpass(prompt='Password: ', stream=None)
+                self.inicio.add_user(user,passw)
+            return False
         except:
             raise Exception("Error al registrar usuario: %s" % user)
             sys.exit(0)
+        return True
 
     def quit(self):
         print("Gracias por usar Inmo.")
@@ -277,11 +336,11 @@ class Bienvenido:
         print(banner)
 
     def __banner(self, text='', ch='-', length=100):
-        spaced_text = ' %s ' % self.text
-        banner = spaced_text.center(self.length, self.ch)
+        spaced_text = ' %s ' % text
+        banner = spaced_text.center(length, ch)
         print(banner)
 
-    def printeol(self):
+    def printEOL(self):
         print('\n')
 
     def header(self):
@@ -290,14 +349,11 @@ class Bienvenido:
         self.__banner('-')
         self.__banner('Sistema de Gestion')
         self.__banner('-')
-        self.__banner('-')
+        self.__banner('Fecha: ' + str(datetime.datetime.now().strftime("%d/%m/%Y")) + ' - Hora: ' + str(time.strftime("%H:%M:%S")))
         self.__banner('  ',' ')
-        self.__banner('Autor: Nicolas Magliaro - version 1.0 \n\n', ' ')
+        self.__banner('Autor: Nicolas Magliaro - version 1.0 \n', ' ')
         self.__banner('  ',' ')
-        self.__banner('  ',' ')
-        self.__banner('  ',' ')
-        self.printeol()
-        self.printeol()
+        self.printEOL()
 
 class Menu:
     '''Muestra un menú y responde a elecciones cuando se ejecuta.'''
@@ -312,19 +368,19 @@ class Menu:
 
     def mostrar_menu(self):
         print("""
-              Menu Inmobiliaria
+                        Menu Inmobiliaria
 
-              1 Mostrar Inmuebles
-              2 Añadir nuevo Inmueble
-              3 Editar Inmueble
-              4 Salir
-        """)
+                        1) Mostrar Inmuebles
+                        2) Añadir nuevo Inmueble
+                        3) Editar Inmueble
+                        4) Salir
+            """)
 
     def run(self):
         '''Muestra el menú y responde a las elecciones.'''
         while True:
             self.mostrar_menu()
-            eleccion = input("Escribe una opción: ")
+            eleccion = input("          Escribe una opción: ")
             accion = self.elecciones.get(str(eleccion))
             if accion:
                 accion()

@@ -82,6 +82,12 @@ class Authenticator:
             return self.users[username].is_logged_in
         return False
 
+    def user_exist(self, username):
+        if username in self.users:
+            return True
+        return False
+
+
 class Authorizor:
     def __init__(self, authenticator):
         self.authenticator = authenticator
